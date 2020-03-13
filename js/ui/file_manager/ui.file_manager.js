@@ -42,6 +42,8 @@ class FileManager extends Widget {
 
         this._initActions();
 
+        this._controllerInitializationDeferred = new Deferred();
+
         this._controller = new FileItemsController({
             currentPath: this.option('currentPath'),
             currentPathKeys: this.option('currentPathKeys'),
@@ -50,6 +52,7 @@ class FileManager extends Widget {
             allowedFileExtensions: this.option('allowedFileExtensions'),
             uploadMaxFileSize: this.option('upload').maxFileSize,
             uploadChunkSize: this.option('upload').chunkSize,
+            onInitialized: this._onControllerInitialized.bind(this),
             onSelectedDirectoryChanged: this._onSelectedDirectoryChanged.bind(this)
         });
         this._commandManager = new FileManagerCommandManager(this.option('permissions'));
@@ -292,6 +295,12 @@ class FileManager extends Widget {
     }
 
     _getItemViewItems() {
+        return this._controllerInitializationDeferred
+            ? this._controllerInitializationDeferred.then(() => this._getItemViewItemsInternal())
+            : this._getItemViewItemsInternal();
+    }
+
+    _getItemViewItemsInternal() {
         const selectedDir = this._getCurrentDirectory();
         if(!selectedDir) {
             return new Deferred()
@@ -564,14 +573,33 @@ class FileManager extends Widget {
         return this._controller.getCurrentDirectory();
     }
 
+    _onControllerInitialized({ controller }) {
+        this._controllerInitializationDeferred.resolve();
+        this._controllerInitializationDeferred = null;
+
+        const currentDirectory = controller.getCurrentDirectory();
+        if(!currentDirectory.fileItem.isRoot()) {
+            this._syncToCurrentDirectory(true);
+        }
+    }
+
     _onSelectedDirectoryChanged() {
+        const currentDirectory = this._getCurrentDirectory();
+        this._syncToCurrentDirectory();
+        this._actions.onCurrentDirectoryChanged({ directory: currentDirectory.fileItem });
+    }
+
+    _syncToCurrentDirectory(skipItemView) {
         const currentDirectory = this._getCurrentDirectory();
         const currentPath = this._controller.getCurrentPath();
         const currentPathKeys = currentDirectory.fileItem.pathKeys;
 
         this._filesTreeView.updateCurrentDirectory();
-        this._itemView.refresh();
         this._breadcrumbs.setCurrentDirectory(currentDirectory);
+
+        if(!skipItemView) {
+            this._itemView.refresh();
+        }
 
         const options = { currentPath };
 
@@ -580,8 +608,6 @@ class FileManager extends Widget {
         }
 
         this.option(options);
-
-        this._actions.onCurrentDirectoryChanged({ directory: currentDirectory.fileItem });
     }
 
     getDirectories(parentDirectoryInfo) {
