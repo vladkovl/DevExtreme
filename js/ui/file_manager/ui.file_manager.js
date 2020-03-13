@@ -251,10 +251,6 @@ class FileManager extends Widget {
 
         $activeArea.removeClass(FILE_MANAGER_INACTIVE_AREA_CLASS);
         $inactiveArea.addClass(FILE_MANAGER_INACTIVE_AREA_CLASS);
-
-        if(!active) {
-            this._clearSelection();
-        }
     }
 
     _switchView(viewMode) {
@@ -361,6 +357,7 @@ class FileManager extends Widget {
 
             selectionMode: 'multiple', // "single"
 
+            selectedItemKeys: [],
 
             /**
             * @name dxFileManagerToolbar
@@ -514,6 +511,9 @@ class FileManager extends Widget {
                 break;
             case 'currentPathKeys':
                 this._controller.setCurrentPathByKeys(args.value);
+                break;
+            case 'selectedItemKeys':
+                // TODO
                 break;
             case 'fileSystemProvider':
             case 'selectionMode':

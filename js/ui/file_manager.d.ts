@@ -151,6 +151,14 @@ export interface dxFileManagerOptions extends WidgetOptions<dxFileManager> {
      */
     selectionMode?: 'multiple' | 'single';
     /**
+     * @docid dxFileManagerOptions.selectedItemKeys
+     * @type Array<string>
+     * @default []
+     * @prevFileNamespace DevExpress.ui
+     * @public
+     */
+    selectedItemKeys?: Array<string>;
+    /**
      * @docid dxFileManagerOptions.toolbar
      * @type dxFileManagerToolbar
      * @prevFileNamespace DevExpress.ui

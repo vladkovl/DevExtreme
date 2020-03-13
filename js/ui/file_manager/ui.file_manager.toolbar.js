@@ -111,11 +111,13 @@ class FileManagerToolbar extends Widget {
         this._generalToolbarVisible = true;
 
         this._$viewSwitcherPopup = $('<div>').addClass(FILE_MANAGER_VIEW_SWITCHER_POPUP_CLASS);
-        this._generalToolbar = this._createToolbar(this.option('generalItems'));
-        this._fileToolbar = this._createToolbar(this.option('fileItems'), true);
-        this._$viewSwitcherPopup.appendTo(this.$element());
 
-        this.$element().addClass(FILE_MANAGER_TOOLBAR_CLASS + ' ' + FILE_MANAGER_GENERAL_TOOLBAR_CLASS);
+        this._generalToolbar = this._createToolbar(this.option('generalItems'), !this._generalToolbarVisible);
+        this._fileToolbar = this._createToolbar(this.option('fileItems'), this._generalToolbarVisible);
+
+        this._$viewSwitcherPopup.appendTo(this.$element());
+        this.$element().addClass(FILE_MANAGER_TOOLBAR_CLASS);
+        this._updateToolbarTypeCssClass(this._generalToolbarVisible);
     }
 
     _render() {
@@ -492,6 +494,11 @@ class FileManagerToolbar extends Widget {
         this._updateItemInToolbar(this._fileToolbar, 'refresh', fileToolbarOptions);
     }
 
+    _updateToolbarTypeCssClass(showGeneralToolbar) {
+        this.$element().toggleClass(FILE_MANAGER_GENERAL_TOOLBAR_CLASS, showGeneralToolbar);
+        this.$element().toggleClass(FILE_MANAGER_FILE_TOOLBAR_CLASS, !showGeneralToolbar);
+    }
+
     update(fileItems) {
         fileItems = ensureDefined(fileItems, []);
 
@@ -501,8 +508,7 @@ class FileManagerToolbar extends Widget {
             this._fileToolbar.option('visible', !showGeneralToolbar);
             this._generalToolbarVisible = showGeneralToolbar;
 
-            this.$element().toggleClass(FILE_MANAGER_GENERAL_TOOLBAR_CLASS, showGeneralToolbar);
-            this.$element().toggleClass(FILE_MANAGER_FILE_TOOLBAR_CLASS, !showGeneralToolbar);
+            this._updateToolbarTypeCssClass(showGeneralToolbar);
         }
 
         const toolbar = this._getVisibleToolbar();

@@ -3623,6 +3623,8 @@ declare module DevExpress.ui {
         permissions?: { copy?: boolean, create?: boolean, delete?: boolean, download?: boolean, move?: boolean, rename?: boolean, upload?: boolean };
         /** @name dxFileManager.Options.rootFolderName */
         rootFolderName?: string;
+        /** @name dxFileManager.Options.selectedItemKeys */
+        selectedItemKeys?: Array<string>;
         /** @name dxFileManager.Options.selectionMode */
         selectionMode?: 'multiple' | 'single';
         /** @name dxFileManager.Options.toolbar */
