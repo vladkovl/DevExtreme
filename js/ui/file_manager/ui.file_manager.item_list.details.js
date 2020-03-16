@@ -42,10 +42,12 @@ class FileManagerDetailsItemList extends FileManagerItemListBase {
         const selectionMode = this._isMultipleSelectionMode() ? 'multiple' : 'none';
 
         this._filesView = this._createComponent($filesView, DataGrid, {
+            dataSource: this._createDataSource(),
             hoverStateEnabled: true,
             selection: {
                 mode: selectionMode
             },
+            selectedRowKeys: this.option('selectedItemKeys'),
             focusedRowEnabled: true,
             allowColumnResizing: true,
             scrolling: {
@@ -66,8 +68,6 @@ class FileManagerDetailsItemList extends FileManagerItemListBase {
             onFocusedRowChanged: this._onFocusedRowChanged.bind(this),
             onOptionChanged: this._onFilesViewOptionChanged.bind(this)
         });
-
-        this.refresh();
     }
 
     _createColumns() {
@@ -224,13 +224,18 @@ class FileManagerDetailsItemList extends FileManagerItemListBase {
         e.items = this._contextMenu.createContextMenuItems(fileItems);
     }
 
-    _onFilesViewSelectionChanged({ selectedRowsData, selectedRowKeys, currentSelectedRowKeys, currentDeselectedRowKeys }) {
-        this._selectAllCheckBoxUpdating = true;
-        this._selectAllCheckBox.option('value', this._isAllItemsSelected());
-        this._selectAllCheckBoxUpdating = false;
+    _onFilesViewSelectionChanged({ component, selectedRowsData, selectedRowKeys, currentSelectedRowKeys, currentDeselectedRowKeys }) {
+        this._filesView = this._filesView || component;
+
+        if(this._selectAllCheckBox) {
+            this._selectAllCheckBoxUpdating = true;
+            this._selectAllCheckBox.option('value', this._isAllItemsSelected());
+            this._selectAllCheckBoxUpdating = false;
+        }
 
         const selectedItems = selectedRowsData.map(itemInfo => itemInfo.fileItem);
         this._tryRaiseSelectionChanged({
+            selectedItemInfos: selectedRowsData,
             selectedItems,
             selectedItemKeys: selectedRowKeys,
             currentSelectedItemKeys: currentSelectedRowKeys,
@@ -313,6 +318,10 @@ class FileManagerDetailsItemList extends FileManagerItemListBase {
             const preserve = selectionController.isSelectionWithCheckboxes();
             this._filesView.selectRows([fileItem.key], preserve);
         }
+    }
+
+    _setSelectedItemKeys(itemKeys) {
+        this._filesView.option('selectedRowKeys', itemKeys);
     }
 
     clearSelection() {

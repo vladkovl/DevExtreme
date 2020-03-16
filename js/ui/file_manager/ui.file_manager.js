@@ -154,6 +154,7 @@ class FileManager extends Widget {
 
         const options = {
             selectionMode: this.option('selectionMode'),
+            selectedItemKeys: this.option('selectedItemKeys'),
             contextMenu: this._createContextMenu(true),
             getItems: this._getItemViewItems.bind(this),
             onError: ({ error }) => this._showError(error),
@@ -208,7 +209,7 @@ class FileManager extends Widget {
     }
 
     _onItemViewSelectionChanged(e) {
-        this._updateToolbar();
+        this._updateToolbar(e.selectedItemInfos);
         this._actions.onSelectionChanged(e);
     }
 
@@ -227,8 +228,8 @@ class FileManager extends Widget {
             .then(() => this._redrawComponent());
     }
 
-    _updateToolbar() {
-        const items = this._getSelectedItemInfos();
+    _updateToolbar(selectedItems) {
+        const items = selectedItems || this._getSelectedItemInfos();
         this._toolbar.update(items);
     }
 
@@ -513,7 +514,7 @@ class FileManager extends Widget {
                 this._controller.setCurrentPathByKeys(args.value);
                 break;
             case 'selectedItemKeys':
-                // TODO
+                this._itemView.option('selectedItemKeys', args.value);
                 break;
             case 'fileSystemProvider':
             case 'selectionMode':

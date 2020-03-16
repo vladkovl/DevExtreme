@@ -12,6 +12,11 @@ const FILE_MANAGER_ITEM_LIST_ITEM_OPEN_EVENT_NAMESPACE = 'dxFileManager_open';
 
 class FileManagerItemListBase extends Widget {
 
+    _init() {
+        this._initActions();
+        super._init();
+    }
+
     _initMarkup() {
         this._initActions();
 
@@ -34,6 +39,7 @@ class FileManagerItemListBase extends Widget {
     _getDefaultOptions() {
         return extend(super._getDefaultOptions(), {
             selectionMode: 'single',
+            selectedItemKeys: [],
             contextMenu: null,
             getItems: null,
             getItemThumbnail: null,
@@ -52,6 +58,9 @@ class FileManagerItemListBase extends Widget {
             case 'getItems':
             case 'getItemThumbnail':
                 this.repaint();
+                break;
+            case 'selectedItemKeys':
+                this._setSelectedItemKeys(args.value);
                 break;
             case 'onError':
             case 'onSelectedItemOpened':
@@ -206,6 +215,9 @@ class FileManagerItemListBase extends Widget {
     }
 
     _deselectItem(item) {}
+
+    _setSelectedItemKeys(itemKeys) {
+    }
 
     _createDataSource() {
         return {

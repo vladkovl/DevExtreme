@@ -1,6 +1,7 @@
 import $ from '../../core/renderer';
 import { extend } from '../../core/utils/extend';
 import { BindableTemplate } from '../../core/templates/bindable_template';
+import Selection from '../selection/selection';
 
 import CollectionWidget from '../collection/ui.collection_widget.edit';
 
@@ -37,6 +38,14 @@ class FileManagerThumbnailListBox extends CollectionWidget {
                 $container.append($itemElement);
             }.bind(this), ['fileItem'], this.option('integrationOptions.watchMethod'))
         });
+    }
+
+    _initSelectionModule() {
+        super._initSelectionModule();
+
+        const selectionConfig = this._selection.options;
+        selectionConfig.selectedKeys = this.option('selectedItemKeys');
+        this._selection = new Selection(selectionConfig);
     }
 
     _renderItemsContainer() {
